@@ -5,6 +5,16 @@ import java.util.Objects;
 public final class Todo {
 	private String text;
 	private Long id;
+	private boolean completed = false;
+	private String category = "";
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getCategory() {
+		return this.category;
+	}
 
 	public Todo (String text, Long id) {
 		this.text = text;
@@ -45,5 +55,13 @@ public final class Todo {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, text);
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
 	}
 }
