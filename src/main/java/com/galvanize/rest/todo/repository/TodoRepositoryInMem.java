@@ -1,6 +1,8 @@
 package com.galvanize.rest.todo.repository;
 
 import com.galvanize.rest.todo.entities.Todo;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,5 +58,12 @@ public class TodoRepositoryInMem  {
 		todoToCategorize.setCategory(category);
 		
 		return todoToCategorize;
+	}
+
+	public Todo updateDate(Long id, LocalDate dueDate) {
+		Todo todoToUpdate = getTodoById(id);
+		todoToUpdate.setDueDate(dueDate);
+		
+		return todoToUpdate;
 	}
 }

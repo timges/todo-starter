@@ -1,11 +1,12 @@
-package com.galvanize.rest.todo.controllers;
+package com.galvanize.rest.todo.controller;
 
 import com.galvanize.rest.todo.entities.Todo;
 import com.galvanize.rest.todo.repository.TodoRepositoryInMem;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,15 @@ public final class TodoListController {
 			.collect(Collectors.toList())
 		);
 	}
-	
+
+	@GetMapping("/uncompleted")
+	List<Todo> getAllUnompletedTodos() {
+		return (
+			todoRepository.findAll().stream()
+			.filter(todo -> !todo.isCompleted())
+			.collect(Collectors.toList())
+		);
+	}	
 
 	@PostMapping
 	ResponseEntity<Todo> addOneTodo(@RequestBody Todo todo) {	
@@ -65,10 +74,16 @@ public final class TodoListController {
 		return new ResponseEntity<Todo>(todoRepository.updateText(id, text), HttpStatus.CREATED);
 	}
 
+	@PostMapping("/add-date/{id}")
+	ResponseEntity<Todo> updateDate(@PathVariable Long id, @RequestParam String dueDate) {
+		return new ResponseEntity<Todo>(todoRepository.updateDate(id, LocalDate.parse(dueDate)), HttpStatus.ACCEPTED);
+	}
+
 	@PostMapping("/categorize/{id}")
 	ResponseEntity<Todo> categorizeTodo(@PathVariable Long id, @RequestParam String category) {
 		return new ResponseEntity<Todo>(todoRepository.categorize(id, category), HttpStatus.CREATED);
 	}
+
 
 	
 

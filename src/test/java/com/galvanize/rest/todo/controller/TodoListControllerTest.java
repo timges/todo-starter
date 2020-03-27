@@ -1,4 +1,4 @@
-package com.galvanize.rest.todo;
+package com.galvanize.rest.todo.controller;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.rest.todo.entities.Todo;
 import com.galvanize.rest.todo.repository.TodoRepositoryInMem;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -176,10 +177,10 @@ final class TodoListControllerTest {
 	}
 
 	@Test
-	void shouldIndicateCompletedTask() throws Exception {		
-		final Todo todo1 = new Todo("type important");
-		final Todo todo2 = new Todo("type important"); 
-		final Todo todo3 = new Todo("uncategorized "); 
+	void shouldIndicateCompletedTasks() throws Exception {		
+		final Todo todo1 = new Todo("completed");
+		final Todo todo2 = new Todo("completed"); 
+		final Todo todo3 = new Todo("uncompleted"); 
 
 		todo1.setCompleted(true);
 		todo2.setCompleted(true);
@@ -201,6 +202,51 @@ final class TodoListControllerTest {
 		assertThat(actual.size(), equalTo(2));
     	assertThat(actual, is(expected));
 	}
+
+	@Test
+	void shouldIndicateUncompletedTasks() throws Exception {		
+		final Todo todo1 = new Todo("completed");
+		final Todo todo2 = new Todo("uncompleted"); 
+		final Todo todo3 = new Todo("uncompleted"); 
+
+		todo1.setCompleted(true);		
+		todoRepository.save(todo1);
+	
+		
+		List<Todo> expected = new ArrayList<>();
+		Collections.addAll(expected, todoRepository.save(todo2) , todoRepository.save(todo3));
+		
+		String json = mvc.perform(get("/api/todo/uncompleted")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json(objectMapper.writeValueAsString(expected)))
+				// Get response as string to parse below for ObjectMapper Example
+				.andReturn().getResponse().getContentAsString();
+
+		// Example using ObjectMapper
+		List<Todo> actual = objectMapper.readValue(json, new TypeReference<List<Todo>>() {});
+		assertThat(actual.size(), equalTo(2));
+    	assertThat(actual, is(expected));
+	}
+
+	@Test 
+	void shouldAddDueDateToItem() throws Exception{
+		Todo todo = new Todo("Should have date");
+		final LocalDate dateToAdd = LocalDate.now();
+		todo.setDueDate(dateToAdd);
+
+		todo = todoRepository.save(todo);
+
+		mvc.perform(post("/api/todo/add-date/" + todo.getId())
+					.param("dueDate", dateToAdd.toString()))
+					.andExpect(status().isAccepted())
+					.andExpect(jsonPath("$.dueDate").value(dateToAdd.toString()));
+		
+	} 
+
+
+
+
 }
 
 

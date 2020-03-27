@@ -1,5 +1,6 @@
 package com.galvanize.rest.todo.entities;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public final class Todo {
@@ -7,19 +8,29 @@ public final class Todo {
 	private Long id;
 	private boolean completed = false;
 	private String category = "";
+	private LocalDate dueDate;
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public LocalDate getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(LocalDate dueDate) {
+		this.dueDate = dueDate;
 	}
 
 	public String getCategory() {
 		return this.category;
 	}
 
-	public Todo (String text, Long id) {
+	public Todo(String text, Long id) {
 		this.text = text;
 		this.id = id;
 	}
+
 	public Todo(String text) {
 		this.text = text;
 	}
@@ -45,10 +56,13 @@ public final class Todo {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == this) return true;
-		if (!(o instanceof Todo)) return false;
+		if (o == this)
+			return true;
+		if (!(o instanceof Todo))
+			return false;
 		Todo other = (Todo) o;
-		if (!this.getId().equals(other.getId())) return false;
+		if (!this.getId().equals(other.getId()))
+			return false;
 		return this.getText().equals(other.getText());
 	}
 
@@ -64,4 +78,5 @@ public final class Todo {
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
 	}
+
 }
